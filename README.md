@@ -1,6 +1,6 @@
 # Riden RD6006P controller via ESPHome
 
-This is a fork from the good work of [wildekek]https://github.com/wildekek/rd6006-controller.
+This is a fork from the good work of [wildekek](https://github.com/wildekek/rd6006-controller).
 
 I have made several adaptations and improvements on the origianl ESPHome yaml configuration that enables the ESP-12F on the WiFi module to work with the RD6006P with its 5 digit of accuracy.
 
