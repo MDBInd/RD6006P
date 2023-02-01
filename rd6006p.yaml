@@ -322,22 +322,9 @@ number:
     optimistic: true
     initial_value: 0
     min_value: 0
-    max_value: 10
+    max_value: 6
     step: 0.1
-    #max_value: !lambda "return int(id(ocp).state);" 
-    #step: !lambda "return int(id(wave_step).state);" 
-    #internal: true
-
-  - platform: template
-    id: sine_direction
-    name: "test_direction"
-    optimistic: true
-    initial_value: 0
-    min_value: 0
-    max_value: 1
-    step: 1
-    #internal: true
-
+    internal: true
 
 switch:
   - platform: modbus_controller
@@ -418,32 +405,14 @@ script:
     mode: restart
     then:
       - lambda: |-
-          auto now = id(output_voltage).state;
           auto max = id(ovp).state;
           auto seed = id(sine_seed).state;
           auto step = sin(seed+(max/2))*(max/2)+(max/2);
-          auto dir = id(sine_direction).make_call();
           auto call = id(output_voltage).make_call();
-          if (seed == max) {
-            dir.set_value(1);
-          } else if (seed == 0) {
-            dir.set_value(0);
-          }
-          dir.perform();
           call.set_value(step);
           call.perform();
-      - if:
-          condition:
-            lambda: |-
-                auto direction = id(sine_direction).state;
-                return direction == 0;
-          then:
-            - number.increment:
-                id: sine_seed
-                cycle: false
-          else:
-            - number.decrement:
-                id: sine_seed
-                cycle: false
+      - number.increment:
+          id: sine_seed
+          cycle: true
       - delay: !lambda "return int(id(wave_delay).state);"
       - script.execute: sine_start

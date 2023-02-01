@@ -11,8 +11,10 @@ With this firmware you can control a Riden RD6006P Power Supply via [Home Assist
 It is intended as a replacement for the Riden mobile and PC software which after testing did not work particularly well.
 
 ## Advanced features
-- Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection) value, this can be set by pressing Shift + V-SET on the RD6006P.
+- Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection).
+- Produce a sine wave with adjustable delay. From 0V to OVP (Over Voltage Protection).
 
+Note: OVP can be set by pressing Shift + V-SET on the RD6006P.
 ## Requirements - Stock firmware:
 - An FTDI adapter (Initial flash)
 - The chip-enable pin on the RD6006P should be physically disconnected
