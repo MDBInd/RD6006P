@@ -11,7 +11,7 @@ esp8266:
 
 # Enable logging
 logger:
-  level: DEBUG
+  #level: DEBUG
   # Disable logging via UART, since we're using this for modbus communication
   baud_rate: 0
 
@@ -127,6 +127,66 @@ sensor:
     name: "RD6006 Wi-Fi Signal"
     update_interval: 60s
 
+  - platform: modbus_controller
+    name: "Year"
+    id: date_year
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 48
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    name: "Month"
+    id: date_month
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 49
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    name: "Day"
+    id: date_day
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 50
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    name: "Hour"
+    id: date_hour
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 51
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    name: "Minute"
+    id: date_minute
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 52
+    value_type: U_WORD
+    internal: true
+
+  - platform: modbus_controller
+    name: "Second"
+    id: date_second
+    modbus_controller_id: powersupply
+    entity_category: diagnostic
+    register_type: holding
+    address: 53
+    value_type: U_WORD
+    internal: true
+
 text_sensor:
   - platform: wifi_info
     ip_address:
@@ -138,6 +198,26 @@ text_sensor:
   - platform: version
     name: "RD6006 Version"
     hide_timestamp: true
+
+  - platform: template
+    name: "Date & Time"
+    update_interval: 10s
+    lambda: |-
+      int year = id(date_year).state;
+      int month = id(date_month).state;
+      int day = id(date_day).state;
+      int hour = id(date_hour).state;
+      int minute = id(date_minute).state;
+      int second = id(date_second).state;
+      std::string year_str = to_string(year);
+      std::string month_str = month < 10 ? "0" + to_string(month) : to_string(month);
+      std::string day_str = day < 10 ? "0" + to_string(day) : to_string(day);
+      std::string hour_str = hour < 10 ? "0" + to_string(hour) : to_string(hour);
+      std::string minute_str = minute < 10 ? "0" + to_string(minute) : to_string(minute);
+      std::string second_str = second < 10 ? "0" + to_string(second) : to_string(second);
+      return day_str + "/" + month_str + "/" + year_str + " " + hour_str + ":" + minute_str + ":" + second_str;
+    icon: mdi:calendar
+
 
 binary_sensor:
   - platform: modbus_controller
@@ -162,7 +242,9 @@ number:
 
   - platform: modbus_controller
     modbus_controller_id: powersupply
+    id: output_voltage
     name: "Output voltage"
+    unit_of_measurement: "V"
     address: 8
     entity_category: config
     icon: "mdi:sine-wave"
@@ -175,6 +257,7 @@ number:
   - platform: modbus_controller
     modbus_controller_id: powersupply
     name: "Output current"
+    unit_of_measurement: "A"
     address: 9
     entity_category: config
     icon: "mdi:current-dc"
@@ -183,7 +266,56 @@ number:
     max_value: 6.1
     step: 0.0001
     multiply: 10000
-    
+
+  - platform: modbus_controller
+    modbus_controller_id: powersupply
+    id: ovp
+    name: "Over voltage protection"
+    unit_of_measurement: "V"
+    address: 82
+    entity_category: config
+    icon: "mdi:sine-wave"
+    value_type: U_WORD
+    min_value: 0
+    max_value: 61
+    step: 0.001
+    multiply: 1000
+
+  - platform: modbus_controller
+    modbus_controller_id: powersupply
+    id: ocp
+    name: "Over current protection"
+    unit_of_measurement: "A"
+    address: 83
+    entity_category: config
+    icon: "mdi:current-dc"
+    value_type: U_WORD
+    min_value: 0
+    max_value: 6.1
+    step: 0.0001
+    multiply: 10000
+
+  - platform: template
+    id: wave_step
+    name: "Wave step"
+    icon: "mdi:triangle-wave"
+    optimistic: true
+    initial_value: 0.1
+    min_value: 0.001
+    max_value: 1
+    step: 0.001
+
+  - platform: template
+    id: wave_delay
+    name: "Wave delay"
+    unit_of_measurement: "ms"
+    icon: "mdi:clock-time-eight-outline"
+    optimistic: true
+    initial_value: 500
+    min_value: 100
+    max_value: 10000
+    step: 10
+
 switch:
   - platform: modbus_controller
     modbus_controller_id: powersupply
@@ -192,3 +324,61 @@ switch:
     register_type: holding
     bitmask: 0x1
     entity_category: config
+
+  - platform: template
+    name: "Start Triangle wave"
+    icon: "mdi:triangle-wave"
+    turn_on_action:
+      - logger.log: "Triangle wave started"
+      - script.execute: triangle_up
+
+  - platform: template
+    name: "Stop wave"
+    icon: "mdi:close-octagon-outline"
+    turn_on_action:
+      - script.stop: triangle_up
+      - script.stop: triangle_down
+
+script:
+  - id: triangle_up
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: |-
+              auto now = id(output_voltage).state;
+              auto max = id(ovp).state;
+              auto step = id(wave_step).state;
+              return (now+step) < max;
+          then:
+            - lambda: |-
+                auto now = id(output_voltage).state;
+                auto step = id(wave_step).state;
+                auto call = id(output_voltage).make_call();
+                call.set_value(now+step);
+                call.perform();
+            - delay: !lambda "return int(id(wave_delay).state);"
+            - script.execute: triangle_up
+          else:
+            - script.execute: triangle_down
+
+  - id: triangle_down
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: |-
+              auto now = id(output_voltage).state;
+              auto step = id(wave_step).state;
+              return (now-step) > 0;
+          then:
+            - lambda: |-
+                auto now = id(output_voltage).state;
+                auto step = id(wave_step).state;
+                auto call = id(output_voltage).make_call();
+                call.set_value(now-step);
+                call.perform();
+            - delay: !lambda "return int(id(wave_delay).state);"
+            - script.execute: triangle_down
+          else:
+            - script.execute: triangle_up

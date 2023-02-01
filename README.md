@@ -1,16 +1,17 @@
 # Riden RD6006P controller via ESPHome
 
-This is a fork from the good work of [wildekek](https://github.com/wildekek/rd6006-controller).
+This is a fork from the good work of [wildekek](https://github.com/wildekek/rd6006-controller) and ideas from [Baldanos](https://github.com/Baldanos/rd6006).
 
 It is recomended to upgrade the stock firmware to the [alternative UniSoft firmware](https://www.eevblog.com/forum/testgear/ruideng-riden-rd6006-dc-power-supply/msg3998257/#msg3998257) as it offers better functionality. 
 
 I have made several adaptations and improvements on the origianl ESPHome yaml configuration that enables the ESP-12F on the WiFi module to work with the RD6006P with its 5 digit of accuracy.
 
-With this fimrware you can control a Riden RD6006P Power Supply via [Home Assistant](https://www.home-assistant.io/). It uses [ESPHome](https://esphome.io/) to abstract modbus commands and expose them to Home Assistant and makes it super easy to interface with your device over WiFi.
+With this firmware you can control a Riden RD6006P Power Supply via [Home Assistant](https://www.home-assistant.io/). It uses [ESPHome](https://esphome.io/) to abstract modbus commands and expose them to Home Assistant and makes it super easy to interface with your device over WiFi.
 
 It is intended as a replacement for the Riden mobile and PC software which after testing did not work particularly well.
 
-The functionality is currently *very* limited, but can easily be extended by borrowing ideas from https://github.com/Baldanos/rd6006, which was a huge inspiration for this project.
+## Advanced features
+- Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection) value, this can be set by pressing Shift + V-SET on the RD6006P.
 
 ## Requirements - Stock firmware:
 - An FTDI adapter (Initial flash)
