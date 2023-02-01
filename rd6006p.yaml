@@ -316,6 +316,29 @@ number:
     max_value: 10000
     step: 10
 
+  - platform: template
+    id: sine_seed
+    name: "test_seed"
+    optimistic: true
+    initial_value: 0
+    min_value: 0
+    max_value: 10
+    step: 0.1
+    #max_value: !lambda "return int(id(ocp).state);" 
+    #step: !lambda "return int(id(wave_step).state);" 
+    #internal: true
+
+  - platform: template
+    id: sine_direction
+    name: "test_direction"
+    optimistic: true
+    initial_value: 0
+    min_value: 0
+    max_value: 1
+    step: 1
+    #internal: true
+
+
 switch:
   - platform: modbus_controller
     modbus_controller_id: powersupply
@@ -333,11 +356,19 @@ switch:
       - script.execute: triangle_up
 
   - platform: template
+    name: "Start Sine wave"
+    icon: "mdi:sine-wave"
+    turn_on_action:
+      - logger.log: "Sine wave started"
+      - script.execute: sine_start
+
+  - platform: template
     name: "Stop wave"
     icon: "mdi:close-octagon-outline"
     turn_on_action:
       - script.stop: triangle_up
       - script.stop: triangle_down
+      - script.stop: sine_start
 
 script:
   - id: triangle_up
@@ -382,3 +413,37 @@ script:
             - script.execute: triangle_down
           else:
             - script.execute: triangle_up
+
+  - id: sine_start
+    mode: restart
+    then:
+      - lambda: |-
+          auto now = id(output_voltage).state;
+          auto max = id(ovp).state;
+          auto seed = id(sine_seed).state;
+          auto step = sin(seed+(max/2))*(max/2)+(max/2);
+          auto dir = id(sine_direction).make_call();
+          auto call = id(output_voltage).make_call();
+          if (seed == max) {
+            dir.set_value(1);
+          } else if (seed == 0) {
+            dir.set_value(0);
+          }
+          dir.perform();
+          call.set_value(step);
+          call.perform();
+      - if:
+          condition:
+            lambda: |-
+                auto direction = id(sine_direction).state;
+                return direction == 0;
+          then:
+            - number.increment:
+                id: sine_seed
+                cycle: false
+          else:
+            - number.decrement:
+                id: sine_seed
+                cycle: false
+      - delay: !lambda "return int(id(wave_delay).state);"
+      - script.execute: sine_start

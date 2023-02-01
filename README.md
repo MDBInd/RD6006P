@@ -32,9 +32,6 @@ It is intended as a replacement for the Riden mobile and PC software which after
 
 ```
 sudo apt install python python-pip
-```
-
-```
 pip install esphome
 ```
 
