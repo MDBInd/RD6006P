@@ -12,7 +12,7 @@ It is intended as a replacement for the Riden mobile and PC software which after
 
 ## Advanced features
 - Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection).
-- Produce a sine wave with adjustable delay. From 0V to OVP (Over Voltage Protection).
+- Produce a modified sine wave with adjustable delay. From 0V to OVP (Over Voltage Protection).
 
 Note: OVP can be set by pressing Shift + V-SET on the RD6006P.
 ## Requirements - Stock firmware:
@@ -25,6 +25,8 @@ Note: OVP can be set by pressing Shift + V-SET on the RD6006P.
 - RD6006P settings:
   - UART Interface: TTL+EN
   - Skip keys lock: ON
+
+![RD6006P Settings](/Examples/Settings.jpg "RD6006P Settings")
 
 ## Initial flash of ESP-12F
 
@@ -50,3 +52,12 @@ esphome run rd6006p.yaml
 This is all much easier to do before you install the WiFi module inside the RD6006P. The case is designed in a way that its not easy to remove the WiFi module once installed. If the board is already installed you may need a set of dental probes to help pry the board out for flashing.
 
 Once the board has been flashed once using this method all future flashing can be done wirelessly using ESPHome's OTA feature.
+
+Example waveforms created with this firmware captured by [RDScreenDumper](https://www.eevblog.com/forum/testgear/ruideng-riden-rd6006-dc-power-supply/msg3998263/#msg3998263)
+
+![Example Sine Wave](/Examples/Sine_Wave-500.jpg "Sine Wave 500ms delay")
+![Example Sine Wave](/Examples/Sine_Wave-1000.jpg "Sine Wave 1000ms delay")
+
+
+![Example Triangle Wave](/Examples/Triangle_Wave-100.jpg "Triangle Wave 100ms delay, 0.1 step")
+![Example Triangle Wave](/Examples/Triangle_Wave-500.jpg "Triangle Wave 500ms delay, 1.0 step")
