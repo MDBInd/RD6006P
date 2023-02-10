@@ -10,6 +10,10 @@ With this firmware you can control a Riden RD6006P Power Supply via [Home Assist
 
 It is intended as a replacement for the Riden mobile and PC software which after testing did not work particularly well.
 
+## Basic features
+- View Output voltage, output current, internal and external temperatures
+- Set voltage, current, over voltage, over current and switch power on/off
+
 ## Advanced features
 - Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection).
 - Produce a modified sine wave with adjustable delay. From 0V to OVP (Over Voltage Protection).

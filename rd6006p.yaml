@@ -64,6 +64,32 @@ modbus_controller:
 
 sensor:
   - platform: modbus_controller
+    modbus_controller_id: powersupply
+    register_type: holding
+    address: 10
+    name: "Output voltage"
+    device_class: voltage
+    unit_of_measurement: "V"
+    icon: "mdi:sine-wave"
+    value_type: U_WORD
+    accuracy_decimals: 3
+    filters:
+      - multiply: 0.001
+
+  - platform: modbus_controller
+    modbus_controller_id: powersupply
+    register_type: holding
+    address: 11
+    name: "Output current"
+    device_class: current
+    unit_of_measurement: "A"
+    icon: "mdi:current-dc"
+    value_type: U_WORD
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.0001
+
+  - platform: modbus_controller
     name: "Model Number"
     entity_category: diagnostic
     modbus_controller_id: powersupply
@@ -243,7 +269,7 @@ number:
   - platform: modbus_controller
     modbus_controller_id: powersupply
     id: output_voltage
-    name: "Output voltage"
+    name: "Set voltage"
     unit_of_measurement: "V"
     address: 8
     entity_category: config
@@ -256,7 +282,7 @@ number:
   
   - platform: modbus_controller
     modbus_controller_id: powersupply
-    name: "Output current"
+    name: "Set current"
     unit_of_measurement: "A"
     address: 9
     entity_category: config
