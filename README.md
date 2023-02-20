@@ -15,10 +15,12 @@ It is intended as a replacement for the Riden mobile and PC software which after
 - Set voltage, current, over voltage, over current and switch power on/off
 
 ## Advanced features
-- Produce a triangle wave with adjustable step and delay. From 0V to OVP (Over Voltage Protection).
-- Produce a modified sine wave with adjustable delay. From 0V to OVP (Over Voltage Protection).
+- Produce a triangle wave with adjustable step, delay and offset.
+- Produce a modified sine wave with adjustable delay.
 
-Note: OVP can be set by pressing Shift + V-SET on the RD6006P.
+Waveforms are generated between Wave min (0-61V) to OVP (0-61V - Over Voltage Protection).
+
+Note: OVP can be set by ESPHome or by pressing Shift + V-SET on the RD6006P.
 ## Requirements - Stock firmware:
 - An FTDI adapter (Initial flash)
 - The chip-enable pin on the RD6006P should be physically disconnected
@@ -65,3 +67,10 @@ Example waveforms created with this firmware captured by [RDScreenDumper](https:
 
 ![Example Triangle Wave](/Examples/Triangle_Wave-100.jpg "Triangle Wave 100ms delay, 0.1 step")
 ![Example Triangle Wave](/Examples/Triangle_Wave-500.jpg "Triangle Wave 500ms delay, 1.0 step")
+
+Example controls in Home Assistant
+
+![Example HA Entities](/Examples/HA_Configuration.jpg "Home Assistant - Configuration")
+![Example HA Entities](/Examples/HA_Controls.jpg "Home Assistant - Waveform Controls")
+![Example HA Entities](/Examples/HA_Sensors.jpg "Home Assistant - Sensors")
+![Example HA Custom Entity](/Examples/HA_Chart.jpg "Home Assistant - Custom Apex chart")
