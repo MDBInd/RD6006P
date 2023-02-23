@@ -89,6 +89,19 @@ sensor:
       - multiply: 0.0001
 
   - platform: modbus_controller
+    modbus_controller_id: powersupply
+    register_type: holding
+    address: 33
+    name: "Battery voltage"
+    device_class: voltage
+    unit_of_measurement: "V"
+    icon: "mdi:battery-outline"
+    value_type: U_WORD
+    accuracy_decimals: 3
+    filters:
+      - multiply: 0.01
+
+  - platform: modbus_controller
     name: "Model Number"
     entity_category: diagnostic
     modbus_controller_id: powersupply
@@ -247,13 +260,23 @@ text_sensor:
 
 binary_sensor:
   - platform: modbus_controller
-    name: "Keypad lock"
     modbus_controller_id: powersupply
+    register_type: holding
+    name: "Keypad lock"
     entity_category: diagnostic
     device_class: lock
-    register_type: holding
     address: 15
     bitmask: 0x1
+
+  - platform: modbus_controller
+    modbus_controller_id: powersupply
+    register_type: holding
+    name: "Battery mode"
+    entity_category: diagnostic
+    icon: "mdi:battery-charging-50"
+    address: 32
+    bitmask: 0x1
+
   
 number:
   - platform: modbus_controller
